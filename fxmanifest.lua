@@ -23,18 +23,16 @@ client_scripts {
 
 server_scripts {
     "server/*.lua",
-    '@qbx_core/modules/lib.lua',
+    --'@qbx_core/modules/lib.lua',
     'inventory/server/*.lua',
 }
 
 
 
 files {
- 
+
 }
 
 escrow_ignore {
     "*/*.*",
 }
-  
-

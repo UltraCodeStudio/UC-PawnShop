@@ -7,15 +7,14 @@ function UpdatePrices()
         for j, x in pairs(k.buyerItems) do
             local item = x
             SellPrices[j] = math.random(item.min, item.max)
-        end 
+        end
     end
 end
-
 
 CreateThread(function()
     while true do
         UpdatePrices()
-        Wait(Config.PricesUpdateTime * 60 * 1000) 
+        Wait(Config.PricesUpdateTime * 60 * 1000)
     end
 end)
 

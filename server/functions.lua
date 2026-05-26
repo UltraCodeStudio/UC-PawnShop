@@ -5,7 +5,11 @@ function GetFramework()
     return nil
 end
 
-function HasItemCheck(src,item, ammount)
+if GetFramework() == 'esx' then
+    ESX = exports.es_extended:getSharedObject()
+end
+
+function HasItemCheck(src, item, ammount)
     local itemCount = Inventory.getItemCount(src, item)
     if itemCount >= ammount then
         return true
@@ -14,21 +18,28 @@ function HasItemCheck(src,item, ammount)
     end
 end
 
-lib.callback.register('dn-pawnshop:basketItemCheck', function(src,item,ammount)
-    if HasItemCheck(src,item,ammount) then
+lib.callback.register('dn-pawnshop:basketItemCheck', function(src, item, ammount)
+    if HasItemCheck(src, item, ammount) then
         Inventory.removePlayerItem(src, item, ammount)
         return true
     end
     return false
-    
 end)
-
+Citizen.CreateThread(function()
+    print("ran")
+    Wait(1000)
+    local xPlayer = ESX.GetPlayerFromId(1)
+    print(xPlayer)
+    if xPlayer then
+        xPlayer.addAccountMoney("money", 100)
+    end
+end)
 
 
 ---@param income number
 RegisterNetEvent('dn-pawnshop:server:functions:pay', function(income)
     local src = source
-    
+
 
     local framework = GetFramework()
     local account = Config.PaymentAccount or 'cash'
@@ -38,14 +49,12 @@ RegisterNetEvent('dn-pawnshop:server:functions:pay', function(income)
         if player then
             player.Functions.AddMoney(account, income, 'pawnshop-payment')
         end
-
     elseif framework == 'qbcore' then
         local QBCore = exports['qb-core']:GetCoreObject()
         local player = QBCore.Functions.GetPlayer(src)
         if player then
             player.Functions.AddMoney(account, income, 'pawnshop-payment')
         end
-
     elseif framework == 'esx' then
         local xPlayer = ESX.GetPlayerFromId(src)
         if xPlayer then
