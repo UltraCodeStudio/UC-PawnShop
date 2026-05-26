@@ -3,7 +3,7 @@ game "gta5"
 lua54 "yes"
 
 description "A Pawn Shop Script by District Network Studios"
-version 'v1.0.0'
+version 'v1.1'
 author "DJultra14"
 
 dependencies {
