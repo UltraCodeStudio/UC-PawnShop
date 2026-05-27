@@ -27,8 +27,6 @@ server_scripts {
     'inventory/server/*.lua',
 }
 
-
-
 files {
 
 }

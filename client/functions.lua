@@ -1,4 +1,3 @@
---Whether the player is currently on a job
 ---@type boolean
 currentJob = false
 
@@ -8,12 +7,11 @@ basket = {}
 ---@type boolean
 Isinside = false
 
----@param model string Ped model (e.g. 's_m_m_security_01')
----@param coords vector3 Spawn coordinates
----@param heading number Heading the ped faces
----@param scenario? string Scenario name (e.g. 'WORLD_HUMAN_CLIPBOARD')
----@param propData? table Props: {model = string, bone = number, pos = vector3, rot = vector3}
----@return number ped The created ped entity
+---@param model string
+---@param coords vector3
+---@param heading number
+---@param scenario? string
+---@param propData? table
 function SpawnCustomPed(model, coords, heading, scenario)
     lib.requestModel(model)
     local modelHash = type(model) == 'string' and joaat(model) or model
@@ -23,7 +21,7 @@ function SpawnCustomPed(model, coords, heading, scenario)
     SetBlockingOfNonTemporaryEvents(ped, true)
     SetEntityInvincible(ped, true)
     FreezeEntityPosition(ped, true)
-    -- Start scenario if provided
+
     if scenario then
         TaskStartScenarioInPlace(ped, scenario, 0, true)
     end
@@ -31,7 +29,6 @@ function SpawnCustomPed(model, coords, heading, scenario)
     return ped
 end
 
----Create A blip on the map
 ---@param coords any
 ---@param sprite any
 ---@param scale any
@@ -40,13 +37,13 @@ end
 ---@return integer
 function CreateBlip(coords, sprite, scale, color, label, setRoute)
     local blip = AddBlipForCoord(coords.x, coords.y, coords.z)
-    SetBlipSprite(blip, sprite) -- Set blip icon
+    SetBlipSprite(blip, sprite)
     SetBlipDisplay(blip, 4)
-    SetBlipScale(blip, scale)   -- Set blip scale
-    SetBlipColour(blip, color)  -- Set blip color
+    SetBlipScale(blip, scale)
+    SetBlipColour(blip, color)
     SetBlipAsShortRange(blip, true)
     BeginTextCommandSetBlipName("STRING")
-    AddTextComponentString(label) -- Set blip label
+    AddTextComponentString(label)
     EndTextCommandSetBlipName(blip)
     if setRoute == false then return blip end
     SetBlipRoute(blip, true)
@@ -54,10 +51,10 @@ function CreateBlip(coords, sprite, scale, color, label, setRoute)
 end
 
 ---@param entity any
----@param sprite integer Blip icon ID
----@param scale number Blip scale
----@param color integer Blip color
----@param label string Blip label
+---@param sprite integer
+---@param scale number
+---@param color integer
+---@param label string
 ---@return integer blip
 function CreateBlipEntity(entity, sprite, scale, color, label)
     if not DoesEntityExist(entity) then
@@ -65,12 +62,12 @@ function CreateBlipEntity(entity, sprite, scale, color, label)
         return nil
     end
     local blip = AddBlipForEntity(entity)
-    SetBlipSprite(blip, sprite)   -- Set blip icon
+    SetBlipSprite(blip, sprite)
     SetBlipDisplay(blip, 4)
-    SetBlipScale(blip, scale)     -- Set blip scale
-    SetBlipColour(blip, color)    -- Set blip color
+    SetBlipScale(blip, scale)
+    SetBlipColour(blip, color)
     BeginTextCommandSetBlipName("STRING")
-    AddTextComponentString(label) -- Set blip label
+    AddTextComponentString(label)
     EndTextCommandSetBlipName(blip)
     SetBlipAsShortRange(blip, true)
     return blip
@@ -95,16 +92,15 @@ end
 ---@return number percent change
 function GetPercentageChange(old, new)
     if old == 0 then
-        return 0 -- Avoid division by zero
+        return 0
     end
     return ((new - old) / old) * 100
 end
 
----Spawns a vehicle
----@param model string Vehicle model name (e.g. 'mule')
----@param coords vector3 Spawn coordinates
----@param heading number Heading of the vehicle
----@return number vehicle The created vehicle entity
+---@param model string
+---@param coords vector3
+---@param heading number
+---@return number vehicle
 function SpawnVehicle(model, coords, heading)
     lib.requestModel(model)
     local vehicle = CreateVehicle(model, coords.x, coords.y, coords.z, heading, true, false)
@@ -122,23 +118,15 @@ function GiveKeys(vehicle)
     local model = GetDisplayNameFromVehicleModel(GetEntityModel(vehicle))
     local src = PlayerPedId()
 
-    -- QS Vehiclekeys
-    if GetResourceState('qs-vehiclekeys') == 'started' then
-        -- Give keys to the player
-        exports['qs-vehiclekeys']:GiveKeys(plate, model, true)
 
-        -- Wasabi Carlock
+    if GetResourceState('qs-vehiclekeys') == 'started' then
+        exports['qs-vehiclekeys']:GiveKeys(plate, model, true)
     elseif GetResourceState('wasabi_carlock') == 'started' then
         TriggerServerEvent('wasabi_carlock:addTempKeys', plate)
-
-        -- CD Garage (basic key trigger)
     elseif GetResourceState('cd_garage') == 'started' then
         TriggerEvent('cd_garage:AddKeys', vehicle)
-
-        -- Default fallback (custom logic or placeholder)
     else
-        -- Send to your own server event or notify the player
-        TriggerEvent('vehiclekeys:client:SetOwner', plate) -- If this exists
+        TriggerEvent('vehiclekeys:client:SetOwner', plate)
         print(('[DEBUG] Gave fallback keys for plate: %s'):format(plate))
     end
 
@@ -146,9 +134,9 @@ function GiveKeys(vehicle)
     Notify("Vehicle Keys", ('You received keys for [%s]'):format(plate), "success")
 end
 
----@param zone table Zone object
----@param income number Income from the sale
----@param vehicle number Vehicle entity used for drop-off
+---@param zone table
+---@param income number
+---@param vehicle number
 function FinishDropOff(income, vehicle, dropOffVehicle, dropOffVehicleSpawn, blip)
     if not DoesEntityExist(vehicle) then
         Notify("Pawn Shop", "The drop-off vehicle is no longer available.", "error")
@@ -180,7 +168,7 @@ end
 function PlayCarryAnimation()
     local ped = PlayerPedId()
     lib.requestAnimDict("anim@heists@box_carry@")
-    lib.playAnim(ped, "anim@heists@box_carry@", "walk",8.0,8.0,-1,16)
+    lib.playAnim(ped, "anim@heists@box_carry@", "walk", 8.0, 8.0, -1, 16)
 end
 
 ---@param ped number
@@ -192,11 +180,10 @@ function PutObjectInHands(ped, model)
     AttachEntityToEntity(object, ped, GetPedBoneIndex(ped, 4090), 0.1, 0.0, 0.0, 0.0, 180.0, 180.0, true, true, false,
         true, 1, true)
     PlayCarryAnimation()
-    
+
     return object
 end
 
----comment
 ---@param ped number
 ---@param object number
 function RemoveObjectFromHands(ped, object)
@@ -209,7 +196,7 @@ end
 
 function TravelBack(income, vehicle, dropOffVehicle, dropOffVehicleSpawn)
     local blip = CreateBlip(dropOffVehicleSpawn, 1, 0.7, 2, "Drop Off Location")
-    FinishDropOff(income, vehicle, dropOffVehicle, dropOffVehicleSpawn, blip) -- Finish the drop-off if no items left
+    FinishDropOff(income, vehicle, dropOffVehicle, dropOffVehicleSpawn, blip)
     Notify("Pawn Shop", "All items have been delivered. Drive back to the shop.", "success")
 end
 
@@ -222,13 +209,12 @@ function StartUnloading(config, income, vehicle, basket, dropOffVehicle, dropOff
             label = 'Unload Items',
             icon = 'fa-solid fa-boxes-stacked',
             onSelect = function()
-                
                 if #unloadBasket > 0 then
-                    ProgressBar("Unloading items...", 5000)                                                          -- Simulate unloading time
-                    holdingObject = PutObjectInHands(PlayerPedId(), Config.ObjectPropList[unloadBasket[1].itemName]) -- Example prop, change as needed
+                    ProgressBar("Unloading items...", 5000)
+                    holdingObject = PutObjectInHands(PlayerPedId(), Config.ObjectPropList[unloadBasket[1].itemName])
                     SetVehicleDoorOpen(vehicle, 5, false, true)
                     SetVehicleDoorOpen(vehicle, 6, false, true)
-                    table.remove(unloadBasket, 1)                                                                    -- Remove the first item from the basket
+                    table.remove(unloadBasket, 1)
                 else
                     Notify("Pawn Shop", "You have no items to unload.", "error")
                     return
@@ -238,7 +224,7 @@ function StartUnloading(config, income, vehicle, basket, dropOffVehicle, dropOff
     })
 
     zoneID = exports.ox_target:addBoxZone({
-        coords = config.dropOffItems, -- Change to your drop-off coordinates
+        coords = config.dropOffItems,
         radius = 2.0,
         debug = false,
         options = {
@@ -247,7 +233,7 @@ function StartUnloading(config, income, vehicle, basket, dropOffVehicle, dropOff
                 icon = 'fa-solid fa-check',
                 onSelect = function()
                     if holdingObject then
-                        ProgressBar("Dropping off item...", 5000) -- Simulate drop-off time
+                        ProgressBar("Dropping off item...", 5000)
                         RemoveObjectFromHands(PlayerPedId(), holdingObject)
                         holdingObject = nil
                         Notify("Pawn Shop", "Item unloaded successfully.", "success")
@@ -264,7 +250,6 @@ function StartUnloading(config, income, vehicle, basket, dropOffVehicle, dropOff
     })
 end
 
----ProgressBar
 ---@param text string
 ---@param duration integer
 function ProgressBar(text, duration)
@@ -283,8 +268,8 @@ function ProgressBar(text, duration)
             dict = "missmechanic",
             clip = "work2_base"
         },
-        
-    })  
+
+    })
 end
 
 function onEnter()
@@ -296,7 +281,6 @@ function onExit()
     Isinside = false
 end
 
----Creates a sphere zone at coords
 ---@param coords vector3
 ---@return table zone
 function CreateZone(coords)
@@ -310,10 +294,9 @@ function CreateZone(coords)
     return zone
 end
 
----Check if the player is in the drop-off area and handle item selling
----@param config table Configuration for the drop-off
----@param income number Income from the sale
----@param vehicle number Vehicle entity used for drop-off
+---@param config table
+---@param income number
+---@param vehicle number V
 function DropOffCheckThread(config, income, vehicle, basket, dropOffVehicle, dropOffVehicleSpawn, blip)
     local zone = CreateZone(config.dropOff)
 
@@ -322,7 +305,7 @@ function DropOffCheckThread(config, income, vehicle, basket, dropOffVehicle, dro
             Citizen.Wait(0)
             if Isinside and IsControlJustReleased(0, 38) then -- E key
                 Isinside = false
-                zone:remove()                                 -- Remove the zone when done
+                zone:remove()
                 SetBlipRoute(blip, false)
                 RemoveBlip(blip)
                 StartUnloading(config, income, vehicle, basket, dropOffVehicle, dropOffVehicleSpawn)
@@ -331,8 +314,8 @@ function DropOffCheckThread(config, income, vehicle, basket, dropOffVehicle, dro
     end)
 end
 
----@param SellLocationsConfig table Drop-off coordinates
----@param income number Income from the sale
+---@param SellLocationsConfig table
+---@param income number
 function StartDropOff(SellLocationsConfig, income, basket, dropOffVehicle, dropOffVehicleSpawn)
     for index, item in pairs(basket) do
         if not lib.callback.await('dn-pawnshop:basketItemCheck', false, item.itemName, item.count) then
