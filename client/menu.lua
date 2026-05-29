@@ -15,8 +15,6 @@ function OpenPawnMenu(dropOffVehicle, dropOffVehicleSpawn)
         }
     end
 
-
-
     options[#options + 1] = {
         title = 'Close',
         icon = 'xmark',
@@ -24,8 +22,6 @@ function OpenPawnMenu(dropOffVehicle, dropOffVehicleSpawn)
             lib.hideContext()
         end
     }
-
-
 
     lib.registerContext({
         id = 'example_context_menu',

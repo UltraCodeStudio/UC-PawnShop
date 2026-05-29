@@ -25,16 +25,6 @@ lib.callback.register('dn-pawnshop:basketItemCheck', function(src, item, ammount
     end
     return false
 end)
-Citizen.CreateThread(function()
-    print("ran")
-    Wait(1000)
-    local xPlayer = ESX.GetPlayerFromId(1)
-    print(xPlayer)
-    if xPlayer then
-        xPlayer.addAccountMoney("money", 100)
-    end
-end)
-
 
 ---@param income number
 RegisterNetEvent('dn-pawnshop:server:functions:pay', function(income)
